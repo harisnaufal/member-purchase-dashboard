@@ -175,3 +175,30 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+.sort-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+}
+
+.sort-button-active {
+  color: #111827;
+}
+
+.sort-indicator {
+  font-size: 12px;
+  line-height: 1;
+  color: #6b7280;
+}
+
+.sort-button-active .sort-indicator {
+  color: #2563eb;
+}

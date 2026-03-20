@@ -3,14 +3,14 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { purchases } from "@/data/purchase";
-import { filterPurchases } from "@/helpers/filter";
+import { filterPurchases, sortPurchases } from "@/helpers/filter";
 import {
   capitalize,
   formatCurrency,
   formatDate,
   getStatusClass,
 } from "@/helpers/utils";
-import type { Filters } from "@/types/purchase";
+import type { Filters, SortDirection, SortKey } from "@/types/purchase";
 
 const initialFilters: Filters = {
   search: "",
@@ -22,6 +22,8 @@ const initialFilters: Filters = {
 export default function Home() {
   const [filters, setFilters] = useState<Filters>(initialFilters);
   const [isLoading, setIsLoading] = useState(false);
+  const [sortKey, setSortKey] = useState<SortKey>("date");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
   const cities = [...new Set(purchases.map((purchase) => purchase.city))];
   const categories = [
@@ -33,6 +35,10 @@ export default function Home() {
     return filterPurchases(purchases, filters);
   }, [filters]);
 
+  const visiblePurchases = useMemo(() => {
+    return sortPurchases(filteredPurchases, sortKey, sortDirection);
+  }, [filteredPurchases, sortKey, sortDirection]);
+
   const handleFilterChange = (key: keyof Filters, value: string) => {
     setIsLoading(true);
 
@@ -42,13 +48,25 @@ export default function Home() {
     }));
   };
 
+  const handleSort = (key: SortKey) => {
+    setIsLoading(true);
+
+    if (sortKey === key) {
+      setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+      return;
+    }
+
+    setSortKey(key);
+    setSortDirection("asc");
+  };
+
   useEffect(() => {
     const timer = window.setTimeout(() => {
       setIsLoading(false);
     }, 300);
 
     return () => window.clearTimeout(timer);
-  }, [filters]);
+  }, [filters, sortKey, sortDirection]);
 
   return (
     <main className="container">
@@ -119,7 +137,7 @@ export default function Home() {
       </section>
 
       <div className="table-meta">
-        <p>{filteredPurchases.length} transactions found</p>
+        <p>{visiblePurchases.length} transactions found</p>
       </div>
 
       <div className="table-wrapper">
@@ -137,16 +155,50 @@ export default function Home() {
                 <th>Member Name</th>
                 <th>City</th>
                 <th>Category</th>
-                <th>Amount</th>
+                <th>
+                  <button
+                    type="button"
+                    className={`sort-button ${sortKey === "amount" ? "sort-button-active" : ""}`}
+                    onClick={() => handleSort("amount")}
+                    aria-label={`Sort by amount ${
+                      sortKey === "amount" ? sortDirection : "none"
+                    }`}
+                  >
+                    Amount
+                    <span className="sort-indicator">
+                      {sortKey === "amount"
+                        ? sortDirection === "asc"
+                          ? "↑"
+                          : "↓"
+                        : "↕"}
+                    </span>
+                  </button>
+                </th>
                 <th>Quantity</th>
-                <th>Date</th>
+                <th>
+                  <button
+                    type="button"
+                    className={`sort-button ${sortKey === "date" ? "sort-button-active" : ""}`}
+                    onClick={() => handleSort("date")}
+                    aria-label={`Sort by date ${sortKey === "date" ? sortDirection : "none"}`}
+                  >
+                    Date
+                    <span className="sort-indicator">
+                      {sortKey === "date"
+                        ? sortDirection === "asc"
+                          ? "↑"
+                          : "↓"
+                        : "↕"}
+                    </span>
+                  </button>
+                </th>
                 <th>Status</th>
               </tr>
             </thead>
 
             <tbody>
-              {filteredPurchases.length > 0 ? (
-                filteredPurchases.map((purchase) => (
+              {visiblePurchases.length > 0 ? (
+                visiblePurchases.map((purchase) => (
                   <tr key={purchase.id}>
                     <td>{purchase.id}</td>
                     <td>{purchase.memberName}</td>
