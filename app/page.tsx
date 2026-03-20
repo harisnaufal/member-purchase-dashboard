@@ -4,9 +4,11 @@ import { useEffect, useMemo, useState } from "react";
 
 import { FilterSection } from "@/components/filter/FilterSection";
 import { TableSkeleton } from "@/components/skeleton/TableSkeleton";
+import { SummarySection } from "@/components/summary/SummarySection";
 import { PurchaseTable } from "@/components/table/PurchaseTable";
 import { purchases } from "@/data/purchase";
 import { filterPurchases, sortPurchases } from "@/helpers/filter";
+import { getPurchaseSummary } from "@/helpers/summary";
 import type { Filters, SortDirection, SortKey } from "@/types/purchase";
 
 const initialFilters: Filters = {
@@ -35,6 +37,10 @@ export default function Home() {
   const visiblePurchases = useMemo(() => {
     return sortPurchases(filteredPurchases, sortKey, sortDirection);
   }, [filteredPurchases, sortKey, sortDirection]);
+
+  const summary = useMemo(() => {
+    return getPurchaseSummary(visiblePurchases);
+  }, [visiblePurchases]);
 
   const handleFilterChange = (key: keyof Filters, value: string) => {
     setIsLoading(true);
@@ -69,6 +75,15 @@ export default function Home() {
     <main className="container">
       <h1 className="title">Member Purchase Insights Dashboard</h1>
       <p className="subtitle">Browse member purchase records below.</p>
+
+      <SummarySection summary={summary} />
+
+      <div className="section-heading records-heading">
+        <h2 className="section-title">Purchase Records</h2>
+        <p className="section-subtitle">
+          Use filters to narrow down the visible transactions.
+        </p>
+      </div>
 
       <FilterSection
         filters={filters}
