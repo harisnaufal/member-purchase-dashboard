@@ -27,6 +27,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [sortKey, setSortKey] = useState<SortKey>("date");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
+  const [isSummaryHighlighted, setIsSummaryHighlighted] = useState(false);
 
   const cities = [...new Set(purchases.map((purchase) => purchase.city))];
   const categories = [
@@ -86,12 +87,30 @@ export default function Home() {
     return () => window.clearTimeout(timer);
   }, [filters, sortKey, sortDirection]);
 
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setIsSummaryHighlighted(true);
+
+    const timer = window.setTimeout(() => {
+      setIsSummaryHighlighted(false);
+    }, 700);
+
+    return () => window.clearTimeout(timer);
+  }, [filters, sortKey, sortDirection]);
+
   return (
     <main className="container">
       <h1 className="title">Member Purchase Insights Dashboard</h1>
       <p className="subtitle">Browse member purchase records below.</p>
 
-      {isLoading ? <SummarySkeleton /> : <SummarySection summary={summary} />}
+      {isLoading ? (
+        <SummarySkeleton />
+      ) : (
+        <SummarySection
+          summary={summary}
+          isHighlighted={isSummaryHighlighted}
+        />
+      )}
 
       {isLoading ? (
         <AggregationSkeleton />

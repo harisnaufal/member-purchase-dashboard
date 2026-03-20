@@ -3,9 +3,13 @@ import { formatCurrency } from "@/helpers/utils";
 
 interface SummarySectionProps {
   summary: PurchaseSummary;
+  isHighlighted: boolean;
 }
 
-export function SummarySection({ summary }: SummarySectionProps) {
+export function SummarySection({
+  summary,
+  isHighlighted,
+}: SummarySectionProps) {
   return (
     <section className="summary-section">
       <div className="section-heading">
@@ -16,24 +20,40 @@ export function SummarySection({ summary }: SummarySectionProps) {
       </div>
 
       <div className="summary-grid">
-        <div className="summary-card">
+        <div
+          className={`summary-card ${
+            isHighlighted ? "summary-card-highlighted" : ""
+          }`}
+        >
           <p className="summary-label">Visible Transactions</p>
           <h3 className="summary-value">{summary.totalVisibleTransactions}</h3>
         </div>
 
-        <div className="summary-card">
+        <div
+          className={`summary-card ${
+            isHighlighted ? "summary-card-highlighted" : ""
+          }`}
+        >
           <p className="summary-label">Paid Amount</p>
           <h3 className="summary-value">
             {formatCurrency(summary.totalPaidAmount)}
           </h3>
         </div>
 
-        <div className="summary-card">
+        <div
+          className={`summary-card ${
+            isHighlighted ? "summary-card-highlighted" : ""
+          }`}
+        >
           <p className="summary-label">Paid Quantity</p>
           <h3 className="summary-value">{summary.totalPaidQuantity}</h3>
         </div>
 
-        <div className="summary-card">
+        <div
+          className={`summary-card ${
+            isHighlighted ? "summary-card-highlighted" : ""
+          }`}
+        >
           <p className="summary-label">Top Category by Paid Amount</p>
           <h3 className="summary-value">{summary.topCategoryByPaidAmount}</h3>
         </div>
