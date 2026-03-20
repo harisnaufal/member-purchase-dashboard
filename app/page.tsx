@@ -2,11 +2,15 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import { AggregationSection } from "@/components/aggregation/AggregationSection";
 import { FilterSection } from "@/components/filter/FilterSection";
 import { TableSkeleton } from "@/components/skeleton/TableSkeleton";
+import { AggregationSkeleton } from "@/components/skeleton/AggregationSkeleton";
+import { SummarySkeleton } from "@/components/skeleton/SummarySkeleton";
 import { SummarySection } from "@/components/summary/SummarySection";
 import { PurchaseTable } from "@/components/table/PurchaseTable";
 import { purchases } from "@/data/purchase";
+import { getPaidAmountByCity } from "@/helpers/aggregation";
 import { filterPurchases, sortPurchases } from "@/helpers/filter";
 import { getPurchaseSummary } from "@/helpers/summary";
 import type { Filters, SortDirection, SortKey } from "@/types/purchase";
@@ -40,6 +44,10 @@ export default function Home() {
 
   const summary = useMemo(() => {
     return getPurchaseSummary(visiblePurchases);
+  }, [visiblePurchases]);
+
+  const aggregation = useMemo(() => {
+    return getPaidAmountByCity(visiblePurchases);
   }, [visiblePurchases]);
 
   const handleFilterChange = (key: keyof Filters, value: string) => {
@@ -76,7 +84,13 @@ export default function Home() {
       <h1 className="title">Member Purchase Insights Dashboard</h1>
       <p className="subtitle">Browse member purchase records below.</p>
 
-      <SummarySection summary={summary} />
+      {isLoading ? <SummarySkeleton /> : <SummarySection summary={summary} />}
+
+      {isLoading ? (
+        <AggregationSkeleton />
+      ) : (
+        <AggregationSection items={aggregation} />
+      )}
 
       <div className="section-heading records-heading">
         <h2 className="section-title">Purchase Records</h2>
