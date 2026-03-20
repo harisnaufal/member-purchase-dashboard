@@ -4,9 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 
 import { AggregationSection } from "@/components/aggregation/AggregationSection";
 import { FilterSection } from "@/components/filter/FilterSection";
-import { TableSkeleton } from "@/components/skeleton/TableSkeleton";
 import { AggregationSkeleton } from "@/components/skeleton/AggregationSkeleton";
 import { SummarySkeleton } from "@/components/skeleton/SummarySkeleton";
+import { TableSkeleton } from "@/components/skeleton/TableSkeleton";
 import { SummarySection } from "@/components/summary/SummarySection";
 import { PurchaseTable } from "@/components/table/PurchaseTable";
 import { purchases } from "@/data/purchase";
@@ -59,6 +59,13 @@ export default function Home() {
     }));
   };
 
+  const handleResetFilters = () => {
+    setIsLoading(true);
+    setFilters(initialFilters);
+    setSortKey("date");
+    setSortDirection("desc");
+  };
+
   const handleSort = (key: SortKey) => {
     setIsLoading(true);
 
@@ -105,6 +112,7 @@ export default function Home() {
         categories={categories}
         statuses={statuses}
         onFilterChange={handleFilterChange}
+        onResetFilters={handleResetFilters}
       />
 
       <div className="table-meta">

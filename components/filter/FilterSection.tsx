@@ -7,6 +7,7 @@ interface FilterSectionProps {
   categories: string[];
   statuses: PurchaseStatus[];
   onFilterChange: (key: keyof Filters, value: string) => void;
+  onResetFilters: () => void;
 }
 
 export function FilterSection({
@@ -15,10 +16,14 @@ export function FilterSection({
   categories,
   statuses,
   onFilterChange,
+  onResetFilters,
 }: FilterSectionProps) {
+  const isDefault =
+    !filters.search && !filters.city && !filters.category && !filters.status;
+
   return (
     <section className="filter-section">
-      <div className="filter-grid">
+      <div className="filter-grid filter-grid-with-action">
         <div className="filter-item">
           <label htmlFor="search">Search Member Name</label>
           <input
@@ -76,6 +81,18 @@ export function FilterSection({
               </option>
             ))}
           </select>
+        </div>
+
+        <div className="filter-item filter-action-item">
+          <label className="filter-action-label"></label>
+          <button
+            type="button"
+            className="reset-button"
+            onClick={onResetFilters}
+            disabled={isDefault}
+          >
+            Reset
+          </button>
         </div>
       </div>
     </section>
